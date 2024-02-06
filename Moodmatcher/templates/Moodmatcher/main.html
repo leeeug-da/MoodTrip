@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+    <nav>
+        <ul>
+        </ul>
+    </nav>
+    <div id="carouselExampleDark" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="{% static 'images/main_image1.jpg' %}" class="d-block w-100" alt="메인 이미지 1">
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'images/main_image2.jpg' %}" class="d-block w-100" alt="메인 이미지 2">
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'images/main_image3.jpg' %}" class="d-block w-100" alt="메인 이미지 3">
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'images/main_image4.jpg' %}" class="d-block w-100" alt="메인 이미지 4">
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'images/main_image5.jpg' %}" class="d-block w-100" alt="메인 이미지 5">
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'images/main_image6.jpg' %}" class="d-block w-100" alt="메인 이미지 6">
+            </div>            
+        </div>
+
+        <!-- 캐러셀 위에 고정된 텍스트와 버튼 추가 -->
+        <div class="fixed-text">
+            <p class="text">Your Mood Your Journey</p>
+            <a href="{% url 'image_choice_recommend' %}" class="btn btn-dark">Start Journey</a>
+        </div>
+    </div>
+
+    <style>
+        #carouselExampleDark {
+            position: relative;
+        }
+
+        #carouselExampleDark img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+
+        /* 고정 텍스트와 버튼 스타일 */
+        .fixed-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .fixed-text .text {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+            font-size: 3em; /* 기본 글자 크기 설정 */
+        }
+
+        .fixed-text .btn {
+            font-size: 1.5em; /* 기본 버튼 크기 설정 */
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        // 자동 슬라이드
+        $('.carousel').carousel({
+            interval: 2000,
+            pause: false
+        });
+
+        // 페이지 로딩이 완료되면 실행
+        $(document).ready(function() {
+            // 이미지의 높이를 가져옴
+            var imageHeight = $('.carousel-item.active img').height();
+            // 이미지 높이에 따라 글자 크기 조절
+            $('.fixed-text .text').css('font-size', imageHeight * 0.4 + 'px'); // 이미지 높이의 2%로 설정
+            $('.fixed-text .btn').css('font-size', imageHeight * 0.3 + 'px'); // 이미지 높이의 1.5%로 설정
+        });
+    </script>
+{% endblock %}

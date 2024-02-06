@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block main %}
+
+<div class="col-md-12">
+    <div class="container">
+        <ul>
+        {% for tour_category in tour_category_list %}
+            <li>{{ tour_category.fields }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+
+{% endblock main %}

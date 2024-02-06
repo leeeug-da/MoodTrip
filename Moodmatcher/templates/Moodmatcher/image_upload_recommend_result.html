@@ -1,0 +1,66 @@
+<!-- 이미지 업로드를 통한 관광지 추천 결과 -->
+{% block content %}
+  <h2>이미지 업로드를 통한 관광지 추천 결과</h2>
+
+  {% if uploaded_image %}
+    <h3>업로드한 이미지</h3>
+    <img src="{{ uploaded_image.url }}" alt="Uploaded Image" style="max-width: 400px; max-height: 400px;">
+  {% endif %}
+
+  <!-- 이미지 업로드 부분 -->
+  <div id="uploadSection">
+    <h3>이미지 업로드</h3>
+    <input type="file" id="imageInput" accept="image/*">
+    <button id="uploadBtn" class="btn btn-primary">이미지 업로드</button>
+  </div>
+
+  <div id="recommendedSpot">
+    <!-- 추천된 관광지 정보를 동적으로 표시할 부분 -->
+    <h3>추천된 관광지</h3>
+    <div id="recommendedSpotInfo"></div>
+  </div>
+{% endblock %}
+
+<!-- jQuery AJAX 부분 -->
+<script>
+    $(document).ready(function() {
+        // 이미지 업로드
+        $("#uploadBtn").on("click", function() {
+            var formData = new FormData();
+            var imageFile = $("#imageInput")[0].files[0];
+
+            formData.append("image", imageFile);
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'upload_image' %}",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    // 업로드 성공 시의 처리
+                    if (data.success) {
+                        var recommendedSpotInfo = formatRecommendedSpotInfo(data.recommended_spot);
+                        $("#recommendedSpotInfo").html(recommendedSpotInfo);
+                    } else {
+                        console.error("Image upload failed:", data.error_message);
+                    }
+                },
+                error: function(error) {
+                    // 업로드 실패 시의 처리
+                    console.error("Image upload failed:", error);
+                }
+            });
+        });
+
+        // 서버로부터 받은 추천 관광지 정보를 포맷하는 함수
+        function formatRecommendedSpotInfo(recommendedSpot) {
+            if (!recommendedSpot) {
+                return "업로드한 이미지에 대한 추천 결과가 없습니다.";
+            }
+
+            var formattedInfo = "<p>" + recommendedSpot.tourist_spot_name + " - 키워드: " + recommendedSpot.top_keywords.join(", ") + "</p>";
+            return formattedInfo;
+        }
+    });
+</script>

@@ -1,0 +1,28 @@
+<!-- image_choice_recommend_result.html -->
+{% extends 'base.html' %}
+
+{% block title %}이미지 선택 기반 추천 결과{% endblock %}
+
+{% block content %}
+  <h2>이미지 선택을 통한 관광지 추천 결과</h2>
+
+  {% if selected_images %}
+    <h3>선택한 이미지</h3>
+    <div class="image-container">
+      {% for image_path in selected_images %}
+        <img src="{{ image_path }}" alt="Selected Image" style="max-width: 200px; max-height: 200px;">
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if recommended_spots %}
+    <h3>추천된 관광지</h3>
+    <ul>
+      {% for spot in recommended_spots %}
+        <li>{{ spot.tourist_spot_name }} - 키워드: {{ spot.top_keywords|join:", " }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>선택한 이미지에 대한 추천 결과가 없습니다.</p>
+  {% endif %}
+{% endblock %}

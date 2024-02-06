@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}게시글 상세보기{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow p-5">
+      <h2 class="text-dark mb-3.5" style="font-weight: 600;">{{ post.title }}</h2>
+      <div class="d-flex justify-content-between align-items-center">
+        <p class="text-secondary small mb-0">작성자: {{ post.author.username }} | 작성일시: {{ post.created_at }}</p>
+      </div>
+      <hr class="my-4"> 
+      <p class="text-dark" style="font-size: 1.5rem; text-align: left;">{{ post.content }}</p>
+
+      <div class="d-flex justify-content-between align-items-center mt-3" style="margin-top: 50px;">
+        <form method="post" action="{% url 'post_like' post_id=post.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-dark btn-sm">
+            좋아요 <span class="ml-1">({{ post.likes.count }})</span>
+          </button>
+        </form>
+        
+        {% if user.is_authenticated and user == post.author %}
+          <div>
+            <a href="{% url 'post_update' category=post.category post_id=post.id %}" class="btn btn-outline-dark btn-sm" style="margin-right: 0.5rem;">수정</a>
+            <a href="{% url 'post_delete' category=post.category post_id=post.id %}" class="btn btn-outline-dark btn-sm">삭제</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+</div>
+
+
+
+
+  
+
+  <!-- 게시물 댓글 사이 여백 조절 -->
+  <div class="mt-5"></div>
+
+  <!-- 댓글 부분 -->
+  <div class="container">
+    <h3 class="text-dark mb-3" style="font-size: 1.5rem;">댓글 ({{ post.comments.count|default:0 }})</h3>
+    <ul class="list-group">
+      {% for comment in post.comments.all %}
+        <li class="list-group-item">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <span class="font-weight-bold">{{ comment.author.username }}</span>
+              <span class="ml-2">{{ comment.created_at }}</span>
+            </div>
+            {% if user.is_authenticated and user == comment.author %}
+              <div>
+                <a href="{% url 'comment_update' comment_id=comment.id %}" class="btn btn-outline-dark btn-sm"style="margin-right: 0.5rem;">수정</a>
+                <a href="{% url 'comment_delete' comment_id=comment.id %}" class="btn btn-outline-dark btn-sm">삭제</a>
+              </div>
+            {% endif %}
+          </div>
+          <p class="text-dark" style="font-size: 1.1rem;">{{ comment.content }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+
+
+
+    <form method="post" action="{% url 'add_comment' post_id=post.id %}">
+      {% csrf_token %}
+      <div class="mb-5">
+        <label for="id_content" class="text-secondary small" style="font-size: 1rem;">
+          <span class="font-weight-bold text-success">{{ user.username }}</span>
+        </label>
+        <div class="input-group">
+          <textarea name="content" class="form-control rounded-3" rows="3" id="id_content" placeholder="댓글을 입력하세요" required></textarea>
+          <div class="input-group-append">
+            <button type="submit" class="btn btn-dark btn-sm">댓글 작성</button>
+          </div>
+        </div>
+      </div>
+      <style>
+        textarea {
+          resize: none;
+        }
+        .btn-group > .btn {
+          margin: 0.2rem;
+          font-size: 0.8rem;
+        }
+      </style>
+    </form>
+  </div>
+  <div class="container mt-4">
+    <div class="text-center">
+      <a href="{% if category == 'community' %}{% url 'community' %}{% elif category == 'customer-service' %}{% url 'customer_service' %}{% endif %}" class="btn btn-secondary mt-3" style="width: 200px; font-size: 1rem; border-radius: 20px; background-color: #6c757d; color: white; border: none;">게시판으로 돌아가기</a>
+    </div>
+</div>
+
+{% endblock %}
