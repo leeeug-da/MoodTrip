@@ -1,0 +1,103 @@
+<!-- image_choice_recommend_result.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}이미지 선택 기반 추천 결과{% endblock %}
+
+{% block content %}
+<style>
+  /* 이미지 크기 조정을 위한 CSS */
+  .selected-image {
+    width: 100%;
+    height: 200px; /* 이미지 카드의 원하는 높이로 설정 */
+    object-fit: cover;
+    border-radius: 10px; /* 이미지 카드의 둥근 테두리 추가 */
+  }
+
+  /* 이미지 카드 디자인 및 폰트 조정 */
+  .card {
+    border: none; /* 기본 카드 테두리 제거 */
+    background-color: #f8f9fa; /* 카드 배경색 지정 */
+  }
+
+  .card-body {
+    padding: 1.25rem; /* 카드 바디 패딩 조정 */
+  }
+
+  .card-title {
+    font-size: 1.25rem; /* 카드 제목 폰트 크기 조정 */
+    margin-bottom: 0.5rem; /* 카드 제목과 본문 간격 조정 */
+    font-weight: bold; /* 굵은 글꼴 적용 */
+  }
+
+  .card-text {
+    font-size: 1rem; /* 카드 본문 폰트 크기 조정 */
+    margin-bottom: 1rem; /* 본문과 버튼 간격 조정 */
+  }
+
+  .btn-primary {
+    background-color: #007bff; /* 버튼 배경색 조정 */
+    border-color: #007bff; /* 버튼 테두리 색상 조정 */
+    font-size: 1rem; /* 버튼 폰트 크기 조정 */
+    font-weight: bold; /* 굵은 글꼴 적용 */
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3; /* 마우스 호버 시 버튼 배경색 조정 */
+    border-color: #0056b3; /* 마우스 호버 시 버튼 테두리 색상 조정 */
+  }
+</style>
+
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-12">
+      {% if selected_images %}
+      <h3 class="mb-4 text-center font-weight-bold">선택한 이미지</h3>
+      <div class="row justify-content-center">
+        {% for image_path in selected_images %}
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <img src="/media/randomImg/{{image_path}}" alt="Selected Image" class="selected-image card-img-top img-fluid rounded">
+            <!-- <img src="{% static image_path %}" alt="Selected Image" class="selected-image card-img-top img-fluid rounded">-->
+            <div class="card-body text-center">
+              <p class="card-text">Selected Image</p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <hr>
+  <div class="row mt-5">
+    <div class="col-md-12">
+      {% if recommended_spots %}
+      <h3 class="mb-4 text-center font-weight-bold">추천 관광지</h3>
+      {% regroup recommended_spots by Top_Keyword as keyword_list %}
+      {% for keyword in keyword_list %}
+      <!-- <h5 class="font-weight-bold">{{ keyword.grouper }}</h5> -->
+      <div class="row justify-content-center" >
+        {% for spot in keyword.list %}
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h6 class="card-title text-center">{{ forloop.counter }}순위 "{{ spot.Tourist_Spot_Name }}"</h6> <!-- 순위 추가 -->
+              <!-- 평점 부분 제거 -->
+              <a href="{% url 'show_selected_spot' spot.tour %}" class="btn btn-primary d-block mx-auto">관광지 정보</a>
+            </div>
+          </div>
+        </div>
+        {% if forloop.counter|divisibleby:3 %}
+          </div><div class="row justify-content-center">
+        {% endif %}
+        {% endfor %}
+      </div>
+      {% endfor %}
+      {% else %}
+      <p class="mt-3 text-center">선택한 이미지에 대한 추천 결과가 없습니다.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

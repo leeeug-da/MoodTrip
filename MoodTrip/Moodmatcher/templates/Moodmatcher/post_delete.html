@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+  <div class="container mt-4">
+    <div class="card shadow p-4">
+      <h2 class="text-dark">글 삭제</h2>
+      <p>아래 글을 삭제하시겠습니까?</p>
+      <h3>{{ post.title }}</h3>
+      <p>작성자: {{ post.author.username }}, 날짜: {{ post.created_at }}</p>
+      <p>{{ post.content }}</p>
+      <form method="post" action="{% url 'post_delete' category=post.category post_id=post.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">삭제</button>
+        <a href="{% url 'post_detail' category=post.category post_id=post.id %}" class="btn btn-secondary">취소</a>
+      </form>
+    </div>
+  </div>
+{% endblock %}

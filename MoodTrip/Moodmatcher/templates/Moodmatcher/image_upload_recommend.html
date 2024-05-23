@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}이미지 업로드 기반 추천{% endblock %}
+
+{% block content %}
+  <div class="container mt-5">
+    <div class="card shadow p-4" style="border-radius: 15px ">
+      <h2 class="text-dark">이미지 업로드를 통한 관광지 추천</h2>
+      <p class="lead">자신이 좋아하는 이미지를 업로드하고 그에 맞는 관광지를 추천받아 보세요.</p>
+
+      <form method="post" enctype="multipart/form-data" class="mt-3" id="imageUploadForm" novalidate>
+        {% csrf_token %}
+        
+        <div class="form-group"> 
+          <label for="{{ form.your_image_field.id_for_label }}">이미지 업로드:</label>
+          {{ form.as_p }}
+        </div>
+        
+        <button type="button" class="btn btn-dark btn-sm mt-2" onclick="uploadImage()">업로드</button>
+
+      </form>
+
+
+      <div id="recommendedSpot" style="display: none; border-top: 1px solid #ccc; padding-top: 20px;">
+        <!-- 추천된 관광지 정보를 동적으로 표시할 부분 -->
+        <h3 class="mt-4">추천된 관광지</h3>
+        <p id="recommendedSpotInfo" style="font-size: 16px;"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function uploadImage() {
+      // FormData를 사용하여 이미지 업로드
+      var formData = new FormData(document.getElementById('imageUploadForm'));
+      var uploadUrl = '{% url "image_upload_recommend" %}';
+      var con = document.getElementById('recommendedSpot')
+      event.preventDefault()
+      // 이미지 업로드 AJAX 요청
+      $.ajax({
+          type: 'POST',
+          url: uploadUrl,
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function (data) {
+              // 추천된 관광지 정보를 동적으로 표시
+              console.log(data); 
+              document.getElementById("recommendedSpot").style.display="block";
+              $("#recommendedSpotInfo").text(data);
+          },
+          error: function (error) {
+              console.error('Error during image upload:', error);
+          }
+      });
+    }
+  
+  </script>
+
+
+
+
+{% endblock %}

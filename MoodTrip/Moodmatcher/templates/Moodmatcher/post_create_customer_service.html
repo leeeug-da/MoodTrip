@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block page_title %}글 작성{% endblock %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2 class="text-dark">글 작성</h2>
+    <form method="post" action="{% url 'post_create_customer_service' category='customer-service' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        {{ form.as_p }}
+      </div>
+      <button type="submit" class="btn btn-primary">작성</button>
+    </form>
+    <a href="{% url 'customer_service' %}" class="btn btn-secondary mt-3">게시판으로 돌아가기</a>
+  </div>
+{% endblock %}

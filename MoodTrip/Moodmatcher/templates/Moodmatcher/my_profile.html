@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container mt-5">
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <h2 class="text-center font-weight-bold mb-0">내 프로필</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 d-flex flex-column align-items-center justify-content-center">
+                        <!-- 프로필 이미지 표시 -->
+                        <div class="profile-image-container text-center mb-3">
+                            {% if profile.profile_picture %}
+                                <img src="{{ profile.profile_picture.url }}" alt="{{ user.username }}'s profile picture" class="img-fluid rounded-circle">
+                            {% else %}
+                                <!-- 기본 프로필 이미지 표시 -->
+                                <img src="{% static 'images/profile.png' %}" alt="profile picture" class="img-fluid rounded-circle">
+                            {% endif %}
+                        </div>
+                        <!-- 사용자의 기본 정보 표시 -->
+                        <h4 class="text-center mb-3"> {{ user.username }}</h4>
+                    </div>
+                    <div class="col-md-8">
+                        <!-- 여기에 사용자가 작성한 게시글과 댓글을 표시하는 코드 추가 -->
+                        <div class="mt-4">
+                            <h4>작성한 게시글</h4>
+                            <p>총 {{ posts.count }}개</p>  <!-- 작성한 게시글 숫자 표시 -->
+                            <ul class="list-group">
+                                {% for post in posts %}
+                                    <li class="list-group-item">
+                                        &bull; <a href="{% url 'post_detail' category=post.category post_id=post.id %}">{{ post.title }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <div class="mt-4">
+                            <h4>작성한 댓글</h4>
+                            <p>총 {{ comments.count }}개</p>
+                            <ul class="list-group">
+                                {% for comment in comments %}
+                                    <li class="list-group-item">
+                                        &bull; {{ comment.content }} - <a href="{% url 'post_detail' category=comment.post.category post_id=comment.post.id %}">{{ comment.post.title }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <div class="mt-4">
+                            <h4>좋아요한 게시물</h4>
+                            <p>총 {{ liked_posts.count }}개</p>
+                            <ul class="list-group">
+                                {% for liked_post in liked_posts %}
+                                    <li class="list-group-item">
+                                        &bull; <a href="{% url 'post_detail' category=liked_post.category post_id=liked_post.id %}">{{ liked_post.title }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>                                                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

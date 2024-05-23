@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block page_title %}글 작성{% endblock %}
+
+{% block content %}
+  {% load widget_tweaks %}
+  <div class="container mt-4">
+    <div class="card shadow p-4">
+      <h2 class="text-dark mb-4 text-center">글 작성</h2>
+      <form method="post" action="{% url 'post_create' category=category %}">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label for="{{ form.title.id_for_label }}" class="text-dark">제목</label>
+          {{ form.title|add_class:"form-control" }}
+        </div>
+        
+        <div class="form-group">
+          <label for="{{ form.content.id_for_label }}" class="text-dark">내용</label>
+          {{ form.content|add_class:"form-control" }}
+        </div>
+        
+        <button type="submit" class="btn btn-dark btn-block">작성</button>
+      </form>
+      
+      <a href="{% if category == 'community' %}{% url 'community' %}{% elif category == 'customer-service' %}{% url 'customer_service' %}{% endif %}" class="btn btn-secondary btn-block mt-3">취소</a>
+    </div>
+  </div>
+{% endblock %}

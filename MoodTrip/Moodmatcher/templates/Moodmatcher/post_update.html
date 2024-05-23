@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+  <div class="container mt-4">
+    <div class="card shadow p-4">
+      <h2 class="text-dark">글 수정</h2>
+      <form method="post" action="{% url 'post_update' category=category post_id=post_id %}">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="{{ form.title.id_for_label }}" class="text-dark">제목</label>
+          {{ form.title | add_class:"form-control" }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.content.id_for_label }}" class="text-dark">내용</label>
+          {{ form.content | add_class:"form-control" }}
+        </div>
+        <button type="submit" class="btn btn-dark">수정</button>
+        <a href="{% url 'post_detail' category=category post_id=post_id %}" class="btn btn-secondary">취소</a>
+      </form>
+    </div>
+  </div>
+{% endblock %}

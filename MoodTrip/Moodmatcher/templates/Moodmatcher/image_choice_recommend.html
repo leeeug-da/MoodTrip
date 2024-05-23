@@ -1,0 +1,164 @@
+<!-- image_choice_recommend.html -->
+{% extends 'base.html' %}
+
+{% load custom_filters %}
+
+{% block title %}이미지 선택 기반 관광지 추천{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+  <h2 class="text-center mb-4">이미지 선택을 통한 관광지 추천</h2>
+  <hr>
+  <p class="text-center">사용자가 선택한 이미지를 바탕으로 맞춤 관광지를 추천받을 수 있습니다. 원하는 이미지를 3개 선택해보세요!</p>
+  <form method="post" action="{% url 'image_choice_recommend' %}" class="mt-3" id="imageForm">
+    {% csrf_token %}
+
+    <div class="row justify-content-center">
+      {% for spot in tourist_spots %}
+      <div class="col-md-3 mb-4 image-container">
+        <div class="card {% if spot.Image_Path in selected_images %}border-primary{% endif %} position-relative">
+          <img src="{{ spot.Image_Path }}" class="card-img-top img-fluid image" onclick="handleImageClick('{{ spot.Image_Path }}')">
+          <input type="checkbox" class="form-check-input" name="selected_images[]" value="{{ spot.Image_Path }}" id="{{ spot.Image_Path }}" style="display: none;">
+          <div class="card-body">
+            <p class="card-text text-center">{{ spot.Image_Path }}</p>
+          </div>
+          <div class="overlay {% if spot.Image_Path in selected_images %}selected-overlay{% endif %}"></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+      <button type="submit" class="btn btn-dark btn-lg">결과 보기 <i class="bi bi-arrow-right"></i></button>
+      <button type="button" class="btn btn-info btn-lg ms-2" onclick="refreshImages()">새로고침 <i class="bi bi-arrow-clockwise"></i></button>
+    </div>
+
+    <div class="row mt-4 justify-content-center">
+      {% for image_url in random_images %}
+      <div class="col-md-2">
+        {% load static %}
+        <img src="{% static image_url %}" class="img-thumbnail image" alt="Random Image">
+        <input type="checkbox" class="form-check-input" name="selected_images" value="{{ image_url }}" id="{{ image_url }}Checkbox" style="display: none;">
+        <label for="{{ image_url }}Checkbox" class="form-check-label text-center" style="display: block;">Click</label>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if recommended_spots %}
+    <h3 class="mt-4 text-center">추천된 관광지</h3>
+    <ul class="list-group text-center">
+      {% for spot in recommended_spots %}
+      <li class="list-group-item">{{ spot.tourist_spot_name }} - Top Keywords: {{ spot.top_keywords|join:", " }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </form>
+</div>
+
+<style>
+  .image {
+    width: 100%;
+    height: 200px; /* 이미지 카드의 원하는 높이로 설정 */
+    object-fit: cover;
+    border-radius: 10px; /* 이미지 카드의 둥근 테두리 추가 */
+  }
+
+  h2.text-center.mb-4 {
+    font-weight: bold;
+  }
+
+  .selected {
+    border: 2px solid #007bff !important;
+  }
+
+  .selected .card-img-top {
+    opacity: 0.5; /* 선택된 이미지의 투명도를 줄임 */
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 123, 255, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .selected .overlay {
+    opacity: 1;
+  }
+
+  .card {
+    cursor: pointer;
+    transition: border 0.3s ease;
+    position: relative;
+  }
+
+  .card:hover {
+    border-color: #007bff;
+  }
+
+  .card-img-top {
+    transition: opacity 0.3s ease;
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 123, 255, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .btn i {
+    margin-left: 5px;
+  }
+</style>
+
+<script>
+  function refreshImages() {
+    document.querySelectorAll('.img-thumbnail').forEach(function(img) {
+      img.src = "{% url 'random_image' %}" + "?t=" + new Date().getTime() + "&rand=" + Math.random();
+    });
+  }
+	$(document).ready(function(){
+    refreshImages()
+  });
+function handleImageClick(id) {
+  let checkbox = document.getElementById(id);
+  checkbox.checked = !checkbox.checked;
+  $(checkbox).parent().toggleClass('selected', checkbox.checked);
+  // 이미지 클릭 시 연결된 체크박스 상태 변경
+  let imageCheckbox = document.getElementById(id + 'Checkbox');
+  imageCheckbox.checked = checkbox.checked;
+}
+
+let limit = 3;
+$('input[type=checkbox]').on('change', function (e) {
+  if ($('input[type=checkbox]:checked').length > limit) {
+    $(this).prop('checked', false);
+    alert("이미지는 최대 3개까지 선택할 수 있습니다.");
+  } else {
+    $(this).parent().toggleClass('selected', this.checked);
+    // 체크박스 상태에 따라 연결된 이미지의 상태 변경
+    let imageId = $(this).attr('id');
+    let image = document.getElementById(imageId);
+    image.checked = this.checked;
+    $(image).parent().toggleClass('selected', this.checked);
+  }
+});
+
+  $('#imageForm').on('submit', function (e) {
+    if ($('input[type=checkbox]:checked').length < 3) {
+      e.preventDefault();
+      alert("이미지를 3개 선택해주세요.");
+    }
+  });
+</script>
+{% endblock %}

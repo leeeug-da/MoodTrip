@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    {% comment %} <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> {% endcomment %}
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <meta charset="UTF-8">
+    <title>MoodTrip - 관광지 추천 서비스</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body style="min-height: 100vh; display: flex; flex-direction: column;">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'main' %}" style="font-weight: bold;">MoodTrip</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'service_intro' %}">서비스소개</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            관광지 추천
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item" href="{% url 'image_choice_recommend' %}">이미지 선택 기반 추천</a>
+                            <a class="dropdown-item" href="{% url 'image_upload_recommend' %}">이미지 업로드 기반 추천</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            커뮤니티
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item" href="{% url 'community' %}">자유게시판</a>
+                            <a class="dropdown-item" href="{% url 'customer_service' %}">고객센터</a>
+                        </div>
+                    </li>
+                    <!-- 마이페이지 드롭다운 -->
+                    {% if user.is_authenticated %}
+                    <!-- 로그인한 경우 -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            마이페이지
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item" href="{% url 'my_profile' %}">내 프로필</a>
+                            <form action="{% url 'logout' %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item">로그아웃</button>
+                            </form>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">로그인</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'signup' %}">회원가입</a>
+                    </li>
+                    {% endif %}
+                    <!-- 다른 메뉴 항목들 -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 페이지의 주요 내용 -->
+    <div class="container py-3">
+        <!-- 메시지 표시 -->
+        {% if messages %}
+        <div class="alert alert-info">
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% block content %}
+        
+        <!-- 각 뷰에 해당하는 내용 -->
+        {% endblock %}
+    </div>
+
+    <footer class="text-center mt-auto" style="height: 30px; background-color: #f5f5f5;">
+        <div style="background-color: #f5f5f5; padding: 10px;">
+            <small class="text-muted" style="display: block; font-size: 12px; line-height: 1.2;">
+                데이터 분석&amp;엔지니어 취업캠프(Python) 30회차<br>
+                여행2조아<br>
+                김현, 강현민, 김수연, 이의진, 권예빈
+            </small>
+        </div>
+    </footer>
+    
+    
+    
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.9/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // 자동 슬라이드
+            $('.carousel').carousel({
+                interval: 3000, // 이미지 변경 간격 (3초)
+                pause: false // 마우스 호버 시에도 슬라이드 멈추지 않음
+            });
+
+            // 이미지 업로드
+            $("#uploadBtn").on("click", function() {
+                var formData = new FormData();
+                var imageFile = $("#imageInput")[0].files[0];
+
+                formData.append("image", imageFile);
+
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'upload_image' %}",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        // 업로드 성공 시의 처리
+                        console.log(data);
+                    },
+                    error: function(error) {
+                        // 업로드 실패 시의 처리
+                        console.error(error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

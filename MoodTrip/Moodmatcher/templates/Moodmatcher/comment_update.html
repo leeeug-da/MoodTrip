@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block title %}댓글 수정{% endblock %}
+
+{% block content %}
+  <div class="container mt-5">
+    <div class="card shadow p-4">
+      <h2 class="text-dark">댓글 수정</h2>
+      {% if comment %}
+      <form method="post" action="{% url 'comment_update' comment_id=comment.id %}">
+          {% csrf_token %}
+          <div class="form-group mt-3">
+              {{ form.content|add_class:"form-control" }}
+          </div>
+          <button type="submit" class="btn btn-dark btn-sm mt-2">수정</button>
+      </form>
+  {% endif %}
+  
+    </div>
+  </div>
+{% endblock %}
